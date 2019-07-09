@@ -1,0 +1,20 @@
+version: "2"
+
+services:
+  app:
+    container_name: "${PROJECT_NAME}_app"
+    restart: always
+    volumes: 
+      - ${APP_MAIN_FOLDER}:/usr/src/app
+    build: .
+    ports:
+      - "${HTTP_PORT}:${HTTP_PORT}"
+    links:
+      - mongo
+  mongo:
+    container_name: "${PROJECT_NAME}_mongo"
+    image: mongo
+    volumes:
+      - ./data:/data/db
+    ports:
+      - "${DB_PORT}:${DB_PORT}"

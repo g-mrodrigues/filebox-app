@@ -6,14 +6,24 @@ const path = require('path')
 const { promisify } = require('util')
 
 const PostSchema = new mongoose.Schema({
-  name: String,
-  size: Number,
-  key: String,
-  url: String,
-  createdAt: {
-    type: Date,
-    default: Date.now
+  name: {
+    type: String,
+    required: true
+  },
+  size: {
+    type: Number,
+    required: true
+  },
+  key: {
+    type: String,
+    required: true
+  },
+  url: {
+    type: String,
+    required: true
   }
+}, {
+  timestamps: true
 })
 
 PostSchema.pre('save', function () {

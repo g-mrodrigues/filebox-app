@@ -7,6 +7,7 @@ const Post = require('./models/Post')
 
 const AuthController = require('./controllers/AuthController')
 const UserController = require('./controllers/UserController')
+const PostController = require('./controllers/PostController');
 
 routes.get('/', (req, res) => {
   return res.json({ status: 'alive' })
@@ -14,36 +15,20 @@ routes.get('/', (req, res) => {
 
 routes.post('/user/login', AuthController.login)
 
-routes.get('/user/logout', auth.required, AuthController.logout)
-
 routes.post('/user/create', UserController.create);
 
-routes.get('/posts', auth.required, async (req, res) => {
-  const posts = await Post.find({})
-  return res.json({ posts })
-})
+routes.get('/user/logout', auth.required, AuthController.logout)
+
+routes.get('/posts', auth.required, PostController.getPosts)
+
+routes.get('/post/:id', auth.required, PostController.getPost)
+
+routes.delete('/post/:id', auth.required, PostController.remove)
 
 routes.post('/posts',
   auth.required,
   multer(multerConfig).single('file'),
-  async (req, res) => {
-    const { originalname: name, size, key, location: url = '' } = req.file
-    const post = await Post.create({
-      name,
-      size,
-      key,
-      url
-    })
-
-    return res.json(post)
-  }
+  PostController.store
 )
-
-routes.delete('/posts/:id', async (req, res) => {
-  const post = await Post.findById(req.params.id)
-  post.remove()
-  return res.send({ response: 'success' })
-})
-
 
 module.exports = routes

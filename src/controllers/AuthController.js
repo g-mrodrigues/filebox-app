@@ -1,6 +1,4 @@
 const passport = require('passport');
-const LocalStrategy = require('../config/passport');
-const User = require('../models/User');
 
 const AuthController = {
   login(req, res, next) {
@@ -24,15 +22,15 @@ const AuthController = {
 
     return passport.authenticate(
       'local', 
-      { session: false }, 
+      { session: false },
       (err, passportUser, info) => {
         if(err) {
           return next(err);
         }
-        
-        
+
         if(passportUser) {
           const user = passportUser;
+          req.user = user;
           return res.json({ user: user.toAuthJSON() });
         }
 

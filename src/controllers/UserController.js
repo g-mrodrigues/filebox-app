@@ -12,13 +12,23 @@ const UserController = {
       });
     }
   
-  if(!user.email) {
-    return res.status(422).json({
-      errors: {
-        email: 'is required',
-      },
-    });
-  }
+    if(!user.email) {
+      return res.status(422).json({
+        errors: {
+          email: 'is required',
+        },
+      });
+    } else {
+      User.findOne({ email: user.email }).then((user) => {
+        if(user) {
+          return res.status(422).json({
+            errors: {
+              email: 'email already registered'
+            }
+          })
+        }
+      });
+    }
 
   if(!user.password) {
     return res.status(422).json({

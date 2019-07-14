@@ -1,9 +1,11 @@
 const passport = require('passport');
+const LocalStrategy = require('../config/passport');
+const User = require('../models/User');
 
 const AuthController = {
-  login(req, res) {
-    const { body : user } = req;
-    
+  login(req, res, next) {
+    const { body: user } = req;
+
     if(!user.email) {
       return res.status(422).json({
         errors: {
@@ -21,28 +23,29 @@ const AuthController = {
     }
 
     return passport.authenticate(
-      'local',
-      { session: false },
+      'local', 
+      { session: false }, 
       (err, passportUser, info) => {
-
         if(err) {
           return next(err);
         }
-
+        
+        
         if(passportUser) {
           const user = passportUser;
-          user.token = passportUser.generateJWT();
-
           return res.json({ user: user.toAuthJSON() });
         }
 
-        return status(400).info;
+        return res.status(400).info;
       }
     )(req, res, next);
-  }, 
+  },
 
   async logout(req, res) {
-    //
+    req.logout();
+    return res.json({
+      token:null
+    });
   }
 }
 

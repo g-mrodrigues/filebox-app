@@ -1,13 +1,13 @@
-const jwt = require('express-jwt');
+const jwt = require('express-jwt')
 
 const getTokenFromHeaders = (req) => {
-  const { headers: authorization } = req;
-  
-  if(authorization && authorization.token !== undefined) {
-    return authorization.token
+  const { authorization } = req.headers
+
+  if (authorization && authorization.split(' ')[0] === 'Bearer') {
+    return authorization.split(' ')[1]
   }
-  return null;
-};
+  return null
+}
 
 const auth = {
   required: jwt({
@@ -22,7 +22,7 @@ const auth = {
     getToken: getTokenFromHeaders,
     credentialsRequired: false,
     passReqToCallback: true
-  }),
-};
+  })
+}
 
-module.exports = auth;
+module.exports = auth

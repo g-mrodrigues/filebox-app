@@ -3,11 +3,10 @@ const multer = require('multer')
 
 const multerConfig = require('./config/multer')
 const auth = require('./auth')
-const Post = require('./models/Post')
 
 const AuthController = require('./controllers/AuthController')
 const UserController = require('./controllers/UserController')
-const PostController = require('./controllers/PostController');
+const PostController = require('./controllers/PostController')
 
 routes.get('/', (req, res) => {
   return res.json({ status: 'alive' })
@@ -15,7 +14,7 @@ routes.get('/', (req, res) => {
 
 routes.post('/user/login', AuthController.login)
 
-routes.post('/user/create', UserController.create);
+routes.post('/user/create', UserController.create)
 
 routes.get('/user/logout', auth.required, AuthController.logout)
 

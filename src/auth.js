@@ -1,28 +1,21 @@
-const jwt = require('express-jwt')
+const jwt = require('jsonwebtoken')
 
-const getTokenFromHeaders = (req) => {
+const VerifyJwtToken = async (req, res, next) => {
   const { authorization } = req.headers
 
   if (authorization && authorization.split(' ')[0] === 'Bearer') {
-    return authorization.split(' ')[1]
+    const token = authorization.split(' ')[1]
+
+    await jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      if (err) { return res.status(401).send({ error: 'Invalid Token' }) }
+
+      req.user = decoded.id
+    })
+
+    return next()
   }
-  return null
+
+  return res.status(401).send({ error: 'Invalid Token' })
 }
 
-const auth = {
-  required: jwt({
-    secret: process.env.JWT_SECRET,
-    userProperty: 'payload',
-    getToken: getTokenFromHeaders,
-    passReqToCallback: true
-  }),
-  optional: jwt({
-    secret: process.env.JWT_SECRET,
-    userProperty: 'payload',
-    getToken: getTokenFromHeaders,
-    credentialsRequired: false,
-    passReqToCallback: true
-  })
-}
-
-module.exports = auth
+module.exports = VerifyJwtToken

@@ -16,16 +16,16 @@ routes.post('/user/login', AuthController.login)
 
 routes.post('/user/create', UserController.create)
 
-routes.get('/user/logout', auth.required, AuthController.logout)
+routes.get('/user/logout', auth, AuthController.logout)
 
-routes.get('/posts', auth.required, PostController.getPosts)
+routes.get('/posts', auth, PostController.getPosts)
 
-routes.get('/post/:id', auth.required, PostController.getPost)
+routes.get('/posts/:id', auth, PostController.getPost)
 
-routes.delete('/post/:id', auth.required, PostController.remove)
+routes.delete('/posts/:id', auth, PostController.remove)
 
 routes.post('/posts',
-  auth.required,
+  auth,
   multer(multerConfig).single('file'),
   PostController.store
 )

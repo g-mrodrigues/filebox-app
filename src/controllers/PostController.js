@@ -1,4 +1,5 @@
 const Post = require('../models/Post')
+const User = require('../models/User')
 
 const PostController = {
   async store (req, res) {
@@ -10,6 +11,15 @@ const PostController = {
       key,
       url
     })
+
+    if (post) {
+      const user = await User.findById(req.user)
+
+      if (!user) { res.status(500).send({ error: 'There\'s an error while processing your request' }) }
+
+      user.posts.push(post)
+      await user.save()
+    }
 
     return res.json(post)
   },
@@ -31,7 +41,15 @@ const PostController = {
   },
 
   async getPosts (req, res) {
-    const posts = await Post.find({})
+    const user = await User.findById(req.user).populate({
+      path: 'posts',
+      options: {
+        sort: {
+          createdAt: -1
+        }
+      }
+    })
+    const posts = user.posts
     return res.json({ posts })
   }
 }

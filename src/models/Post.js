@@ -32,8 +32,12 @@ PostSchema.pre('save', function () {
 })
 
 PostSchema.pre('remove', function () {
+  const post = this
+  const userPosts = post.model('User').findOne({ posts: post._id })
+  userPosts.posts.remove(post._id)
+  userPosts.save()
+
   if (process.env.STORAGE_TYPE === 's3') {
-    console.log(process.env.STORAGE_TYPE)
     return s3.deleteObject({
       Bucket: process.env.BUCKET_NAME,
       Key: this.key

@@ -62,6 +62,22 @@ const UserController = {
       .then(() =>
         res.json({ user: finalUser.toAuthJSON() }
         ))
+  },
+
+  async getUser (req, res) {
+    const user = User.findById(req.params.id)
+
+    if (!user) { res.status(500).send({ error: 'There\'s an error while processing your request' }) }
+
+    return res.send({ user })
+  },
+
+  async update (req, res) {
+    // TODO UPDATE USER
+  },
+
+  async delete (req, res) {
+    // TODO DELETE USER
   }
 }
 

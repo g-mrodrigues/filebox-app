@@ -23,10 +23,10 @@ const UserSchema = new mongoose.Schema({
     select: false,
     required: true
   },
-  posts: [
+  boxes: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Post'
+      ref: 'Box'
     }
   ]
 }, {

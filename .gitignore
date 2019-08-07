@@ -4,3 +4,4 @@ node_modules
 .infrastructure/*/*/data
 *.log
 tmp
+.vscode

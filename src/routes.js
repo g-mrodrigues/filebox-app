@@ -6,28 +6,35 @@ const auth = require('./auth')
 
 const AuthController = require('./controllers/AuthController')
 const UserController = require('./controllers/UserController')
-const PostController = require('./controllers/PostController')
+const FileController = require('./controllers/FileController')
+const BoxController = require('./controllers/BoxController')
 
 routes.get('/', (req, res) => {
   return res.json({ status: 'alive' })
 })
 
-routes.post('/user/login', AuthController.login)
+routes.post('/login', AuthController.login)
+routes.get('/logout', auth, AuthController.logout)
 
-routes.post('/user/create', UserController.create)
+routes.get('/user/:id', UserController.getUser)
+routes.post('/user', UserController.create)
+routes.put('/user', UserController.update)
+routes.delete('/user', UserController.delete)
 
-routes.get('/user/logout', auth, AuthController.logout)
+routes.post('/box', auth, BoxController.store)
+routes.get('/box', auth, BoxController.getBoxes)
+routes.get('/box/:id', auth, BoxController.getBox)
+routes.delete('/box/:id', auth, BoxController.remove)
+routes.put('/box/:id', auth, BoxController.update)
 
-routes.get('/posts', auth, PostController.getPosts)
+routes.get('/file', auth, FileController.getFiles)
+routes.get('/file/:fileId', auth, FileController.getFile)
 
-routes.get('/posts/:id', auth, PostController.getPost)
-
-routes.delete('/posts/:id', auth, PostController.remove)
-
-routes.post('/posts',
+routes.delete('/box/:id/file/:fileId', auth, FileController.remove)
+routes.post('/box/:id/file',
   auth,
   multer(multerConfig).single('file'),
-  PostController.store
+  FileController.store
 )
 
 module.exports = routes

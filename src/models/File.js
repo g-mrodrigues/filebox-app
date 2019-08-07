@@ -5,7 +5,7 @@ const fs = require('fs')
 const path = require('path')
 const { promisify } = require('util')
 
-const PostSchema = new mongoose.Schema({
+const FileSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true
@@ -25,18 +25,13 @@ const PostSchema = new mongoose.Schema({
   timestamps: true
 })
 
-PostSchema.pre('save', function () {
+FileSchema.pre('save', function () {
   if (!this.url) {
     this.url = `${process.env.APP_URL}/files/${this.key}`
   }
 })
 
-PostSchema.pre('remove', function () {
-  const post = this
-  const userPosts = post.model('User').findOne({ posts: post._id })
-  userPosts.posts.remove(post._id)
-  userPosts.save()
-
+FileSchema.pre('remove', function () {
   if (process.env.STORAGE_TYPE === 's3') {
     return s3.deleteObject({
       Bucket: process.env.BUCKET_NAME,
@@ -49,4 +44,4 @@ PostSchema.pre('remove', function () {
   }
 })
 
-module.exports = mongoose.model('Post', PostSchema)
+module.exports = mongoose.model('File', FileSchema)

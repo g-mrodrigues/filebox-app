@@ -1,46 +1,42 @@
-const passport = require('passport')
+const User = require('../models/User')
 
 const AuthController = {
   login (req, res, next) {
-    const { body: user } = req
+    const { email, password } = req.body
 
-    if (!user.email) {
+    if (!email) {
       return res.status(422).json({
-        errors: {
+        error: {
           email: 'is required'
         }
       })
     }
 
-    if (!user.password) {
+    if (!password) {
       return res.status(422).json({
-        errors: {
+        error: {
           password: 'is required'
         }
       })
     }
 
-    return passport.authenticate(
-      'local',
-      { session: false },
-      (err, passportUser, info) => {
-        if (err) {
-          return next(err)
+    User.findOne({ email }).select('+password').select('+salt')
+      .then((user) => {
+        if (!user) {
+          return res.status(422).send({ error: { email: 'is invalid' } })
         }
 
-        if (passportUser) {
-          const user = passportUser
-          req.user = user
-          return res.json({ user: user.toAuthJSON() })
+        if (!user.validatePassword(password)) {
+          return res.status(422).send({ error: { password: 'is invalid' } })
         }
 
-        return res.status(400).info
-      }
-    )(req, res, next)
+        return res.json({ user: user.toAuthJSON() })
+      }).catch((res) => {
+        res.status(400).send({ error: 'There\'s an error while processing your request' })
+      })
   },
 
-  async logout (req, res) {
-    req.logout()
+  logout (req, res) {
     return res.json({
       token: null
     })

@@ -16,10 +16,10 @@ routes.get('/', (req, res) => {
 routes.post('/login', AuthController.login)
 routes.get('/logout', auth, AuthController.logout)
 
-routes.get('/user/:id', UserController.getUser)
+routes.get('/user/:id', auth, UserController.getUser)
 routes.post('/user', UserController.create)
-routes.put('/user', UserController.update)
-routes.delete('/user', UserController.delete)
+// TODO routes.put('/user', auth, UserController.update)
+// TODO routes.delete('/user', auth, UserController.delete)
 
 routes.post('/box', auth, BoxController.store)
 routes.get('/box', auth, BoxController.getBoxes)
@@ -27,8 +27,8 @@ routes.get('/box/:id', auth, BoxController.getBox)
 routes.delete('/box/:id', auth, BoxController.remove)
 routes.put('/box/:id', auth, BoxController.update)
 
-routes.get('/file', auth, FileController.getFiles)
-routes.get('/file/:fileId', auth, FileController.getFile)
+routes.get('/box/:id/file', auth, FileController.getFiles)
+routes.get('/box/:id/file/:fileId', auth, FileController.getFile)
 
 routes.delete('/box/:id/file/:fileId', auth, FileController.remove)
 routes.post('/box/:id/file',

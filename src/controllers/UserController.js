@@ -65,7 +65,7 @@ const UserController = {
   },
 
   async getUser (req, res) {
-    const user = User.findById(req.params.id)
+    const user = await User.findById(req.params.id, 'name email createdAt')
 
     if (!user) { res.status(500).send({ error: 'There\'s an error while processing your request' }) }
 

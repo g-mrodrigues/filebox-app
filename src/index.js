@@ -1,5 +1,4 @@
 require('dotenv').config()
-require('./config/passport')
 
 const express = require('express')
 const morgan = require('morgan')

@@ -3,10 +3,10 @@ const Box = require('../models/Box')
 
 const BoxController = {
   async store (req, res) {
-    const { name } = req.box
+    const { title } = req.body
 
     const box = await Box.create({
-      name
+      title
     })
 
     if (box) {
@@ -18,7 +18,7 @@ const BoxController = {
       await user.save()
     }
 
-    return res.json(box)
+    return res.json({ box })
   },
 
   async remove (req, res) {
@@ -35,19 +35,27 @@ const BoxController = {
   },
 
   async update (req, res) {
-    const box = await Box.findById(req.params.id)
-
-    if (!box) { res.status(500).send({ error: 'There\'s an error while processing your request' }) }
-
-    box.update(req.body)
-
-    return res.send({ response: 'success' })
+    try {
+      const box = await Box.findByIdAndUpdate(req.params.id, req.body, { new: true }).select('title createdAt')
+      return res.send({ box })
+    } catch (e) {
+      res.status(500).send({ error: 'There\'s an error while processing your request' })
+      console.log(e)
+    }
   },
 
-  getBox (req, res) {
-    const box = Box.findById(req.params.id)
+  async getBox (req, res) {
+    const box = await Box.findById(req.params.id, 'title createdAt').populate({
+      path: 'files',
+      select: 'name size url createdAt',
+      options: {
+        sort: {
+          createdAt: -1
+        }
+      }
+    })
 
-    if (box.id) {
+    if (box) {
       return res.json({ box })
     }
 
@@ -57,12 +65,23 @@ const BoxController = {
   async getBoxes (req, res) {
     const user = await User.findById(req.user).populate({
       path: 'boxes',
+      select: 'title filesCount createdAt',
       options: {
         sort: {
           createdAt: -1
         }
+      },
+      populate: {
+        path: 'files',
+        select: 'name size url createdAt',
+        options: {
+          sort: {
+            createdAt: -1
+          }
+        }
       }
     })
+
     const boxes = user.boxes
     return res.json({ boxes })
   }

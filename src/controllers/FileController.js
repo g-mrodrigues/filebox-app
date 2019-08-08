@@ -13,7 +13,7 @@ const FileController = {
     })
 
     if (file) {
-      const box = Box.findById(req.params.id)
+      const box = await Box.findById(req.params.id)
 
       if (!box) { res.status(500).send({ error: 'There\'s an error while processing your request' }) }
 
@@ -37,10 +37,10 @@ const FileController = {
     return res.send({ response: 'success' })
   },
 
-  getFile (req, res) {
-    const file = File.findById(req.params.id)
+  async getFile (req, res) {
+    const file = await File.findById(req.params.fileId).select('name size url createdAt')
 
-    if (file.id) {
+    if (file) {
       return res.json({ file })
     }
 
@@ -48,8 +48,9 @@ const FileController = {
   },
 
   async getFiles (req, res) {
-    const box = await Box.findById(req.box.id).populate({
+    const box = await Box.findById(req.params.id).populate({
       path: 'files',
+      select: 'name size url createdAt',
       options: {
         sort: {
           createdAt: -1

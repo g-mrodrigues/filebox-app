@@ -1,7 +1,7 @@
 version: "2"
 
 services:
-  app:
+  filebox-app:
     container_name: "${PROJECT_NAME}_app"
     restart: always
     volumes: 
@@ -9,12 +9,21 @@ services:
     build: .
     ports:
       - "${HTTP_PORT}:${HTTP_PORT}"
-    links:
-      - mongo
-  mongo:
+    networks:
+      - bubble
+  filebox-mongo:
     container_name: "${PROJECT_NAME}_mongo"
     image: mongo
     volumes:
-      - ./data:/data/db
+      - filebox_mongo:/data/db
     ports:
       - "${DB_PORT}:${DB_PORT}"
+    networks:
+      - bubble
+
+networks:
+  bubble:
+    external: true
+
+volumes:
+  filebox_mongo:

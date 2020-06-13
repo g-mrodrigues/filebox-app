@@ -9,15 +9,20 @@ const UserController = require('./controllers/UserController')
 const FileController = require('./controllers/FileController')
 const BoxController = require('./controllers/BoxController')
 
+const AuthValidator = require('./validators/AuthenticateValidators')
+const UserCreateValidator = require('./validators/UserValidators');
+
+routes.use('/api/v1/', routes)
+
 routes.get('/', (req, res) => {
   return res.json({ status: 'alive' })
 })
 
-routes.post('/login', AuthController.login)
+routes.post('/login', [AuthValidator], AuthController.login)
 routes.get('/logout', auth, AuthController.logout)
 
 routes.get('/user/:id', auth, UserController.getUser)
-routes.post('/user', UserController.create)
+routes.post('/user', [UserCreateValidator], UserController.create)
 // TODO routes.put('/user', auth, UserController.update)
 // TODO routes.delete('/user', auth, UserController.delete)
 

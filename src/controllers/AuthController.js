@@ -1,46 +1,40 @@
-const User = require('../models/User')
+/* eslint-disable class-methods-use-this */
+require('./../config/passport')
+const passport = require('passport')
+const { validationResult } = require('express-validator')
 
-const AuthController = {
-  login (req, res, next) {
-    const { email, password } = req.body
+class Auth {
+  async login (req, res, next) {
+    const errors = validationResult(req)
 
-    if (!email) {
-      return res.status(422).json({
-        error: {
-          email: 'is required'
-        }
-      })
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() })
     }
 
-    if (!password) {
-      return res.status(422).json({
-        error: {
-          password: 'is required'
-        }
-      })
-    }
-
-    User.findOne({ email }).select('+password').select('+salt')
-      .then((user) => {
-        if (!user) {
-          return res.status(422).send({ error: { email: 'is invalid' } })
+    return await passport.authenticate(
+      'local',
+      { session: false },
+      (err, passportUser, info) => {
+        console.log(err)
+        if (err) {
+          throw new Error(err)
         }
 
-        if (!user.validatePassword(password)) {
-          return res.status(422).send({ error: { password: 'is invalid' } })
-        }
+        if (passportUser) {
+          const user = passportUser
+          user.token = passportUser.generateJWT()
 
-        return res.json({ user: user.toAuthJSON() })
-      }).catch((res) => {
-        res.status(400).send({ error: 'There\'s an error while processing your request' })
-      })
-  },
+          return res.json({ user: user.toAuthJSON() })
+        }
+        console.log(info)
+        return res.status(400)
+      }
+    )(req, res, next)
+  }
 
   logout (req, res) {
-    return res.json({
-      token: null
-    })
+    return res.json({ token: '' })
   }
 }
 
-module.exports = AuthController
+module.exports = new Auth()

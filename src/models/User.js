@@ -50,7 +50,7 @@ UserSchema.methods.generateJWT = function () {
   },
   process.env.JWT_SECRET,
   {
-    expiresIn: 3600
+    expiresIn: process.env.JWT_EXPIRES_IT
   })
 }
 
@@ -59,6 +59,16 @@ UserSchema.methods.toAuthJSON = function () {
     _id: this._id,
     email: this.email,
     token: this.generateJWT()
+  }
+}
+
+UserSchema.methods.getPublicFields = function () {
+  return {
+    _id: this._id,
+    name: this.name,
+    email: this.email,
+    created_at: this.createdAt,
+    update_at: this.updatedAt
   }
 }
 

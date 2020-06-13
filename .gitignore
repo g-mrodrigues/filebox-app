@@ -1,11 +1,1 @@
-./src/*.lock
-./src/node_modules
-./src/.env
-*.log
-./src/tmp
-./.vscode
-node_modules
 .history
-
-#keep
-!.infrastructure
